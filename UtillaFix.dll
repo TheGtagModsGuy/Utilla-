@@ -1,0 +1,68 @@
+using BepInEx;
+using UnityEngine;
+
+[BepInPlugin("com.yourname.myutilities", "My Utilities", "1.0.0")]
+public class MyUtilities : BaseUnityPlugin
+{
+    // Event subscriptions for things like player joining or leaving
+    public delegate void PlayerEvent();
+    public static event PlayerEvent OnPlayerJoined;
+    public static event PlayerEvent OnPlayerLeft;
+
+    void Start()
+    {
+        Logger.LogInfo("My Utilities Loaded!");
+
+        // Subscribe to the necessary game events here
+        // For demonstration, we'll assume these events are fired by Gorilla Tag, though you may need to code them yourself
+    }
+
+    void Update()
+    {
+        // Example: Check if a certain button is pressed, and trigger an event
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            Logger.LogInfo("F1 pressed - Triggering a custom event!");
+            OnPlayerJoined?.Invoke();
+        }
+    }
+
+    // Example Method to Add a Custom Game Object
+    public GameObject CreateCustomObject(string name, Vector3 position)
+    {
+        GameObject customObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        customObject.name = name;
+        customObject.transform.position = position;
+
+        Logger.LogInfo($"{name} created at {position}");
+        return customObject;
+    }
+}
+
+
+using UnityEngine;
+
+public class ModMenu : MonoBehaviour
+{
+    private bool showMenu = false;
+
+    void OnGUI()
+    {
+        // Button to show or hide the menu
+        if (GUI.Button(new Rect(10, 10, 100, 30), "Toggle Menu"))
+        {
+            showMenu = !showMenu;
+        }
+
+        // If menu is visible, show more buttons
+        if (showMenu)
+        {
+            // Button to create a custom object
+            if (GUI.Button(new Rect(10, 50, 150, 30), "Spawn Cube"))
+            {
+                GameObject cube = MyUtilities.CreateCustomObject("Cube", Vector3.zero);
+                Logger.LogInfo("Cube spawned!");
+            }
+        }
+    }
+}
